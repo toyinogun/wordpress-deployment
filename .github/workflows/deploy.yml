@@ -1,0 +1,22 @@
+name: Deploy to Droplet
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Sync files to Droplet
+      uses: easingthemes/ssh-deploy@v2.1.5
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        ARGS: "-avzr --delete --exclude='.git*' --exclude='wp-config.php' --exclude='wp-content/uploads/'"
+        SOURCE: "./"
+        REMOTE_HOST: ${{ secrets.DROPLET_IP }}
+        REMOTE_USER: ${{ secrets.DROPLET_USER }}
+        TARGET: "/var/www/wordpress"
